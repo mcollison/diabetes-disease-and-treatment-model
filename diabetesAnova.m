@@ -1,5 +1,5 @@
 %DIABETESANOVA2 Calculates differential stats for treatment groups
-%   DIABETESANOVA2 Returns a 26x59 cell array each containing measurements 
+%   DIABETESANOVA2 co-ordinates analyses of a dataset 
 
 
 %% initial configuration 
