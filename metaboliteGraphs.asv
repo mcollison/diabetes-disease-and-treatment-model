@@ -10,16 +10,20 @@ function metaboliteGraphs(category, metaboliteNames, anovaAllGroups)
 
 tempGroupNames = [' WT ';' Ob ';'G+ve';'G-ve';'g-ve';'OFS ';'G+An';'G-A1';'G-A2'];
 
-%% plot insulin:glucose graph to demonstrate model validation 
-groupNames = ['  Wild Type  '; 'Obese Induced'];
+%% plot insulin:glucose graph
 figure
 logres(1,:)=log(category{1,2}{1,2})
 logres(2,:)=log(category{2,2}{1,2})
 boxplot(logres')
-set(gca,'XLim',[.5 2.5]);
-set(gca,'XTick',[1:2]);
-set(gca,'XTickLabel', groupNames);
+bar_h=bar(y);
+bar_child=get(bar_h,'Children');
+set(bar_child,'CData',colours);
 title('insulin:glucose ratio');
+hold on;
+eb1 = errorbar(averages(27,:),stderrors(27,:),'.k');
+set(gca,'XLim',[.5 q+0.5]);
+set(gca,'XTick',[1:q]);
+set(gca,'XTickLabel',tempGroupNames);
 
 %% 
 %plot all metabolites in 

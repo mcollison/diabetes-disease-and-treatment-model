@@ -1,29 +1,27 @@
 
 %compute t test stats 
 figure
-res(1,:)=metabolite(27,1:10)
-res(2,:)=metabolite(27,11:20)
+[H,P,CI,STATS]=ttest(metabolite(27,1:10),metabolite(27,11:20))
+res(1,:)=log(metabolite(27,1:10))
+res(2,:)=log(metabolite(27,11:20))
 subplot(2,1,1)
 boxplot(res')
-logres(1,:)=log(metabolite(27,1:10))
-logres(2,:)=log(metabolite(27,11:20))
-subplot(2,1,2)
-boxplot(logres')
-
-figure
-subplot(2,1,1)
-normplot(metabolite(27,1:10))
-subplot(2,1,2)
-normplot(metabolite(27,11:20))
+res(1,:)=log(metabolite(27,1:10))
+res(2,:)=log(metabolite(27,11:20))
+res(1,:)=log(metabolite(27,1:10))
+res(2,:)=log(metabolite(27,11:20))
+boxplot(res')
+boxplot(res')
 figure
 subplot(2,1,1)
 normplot(log(metabolite(27,1:10)))
 subplot(2,1,2)
 normplot(log(metabolite(27,11:20)))
-
-
-[H,P,CI,STATS]=ttest(res(1,:),res(2,:))
-[H,P,CI,STATS]=ttest(logres(1,:),logres(2,:))
+figure
+subplot(2,1,1)
+normplot(metabolite(27,1:10))
+subplot(2,1,2)
+normplot(metabolite(27,11:20))
 
 figure
 [H,P,CI,STATS]=ttest(metabolite(23,1:10),metabolite(23,11:20))

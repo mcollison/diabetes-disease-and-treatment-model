@@ -1,0 +1,42 @@
+function otuGraphs(category, otuNames, averages, stderrors, anovaAllGroups)
+%This function plots graphs for metbolite data 
+
+%standardise labels for graphs
+for i=1:5
+    groupNames(i,:) = '        ';
+    groupNames(i,1:length(category{i,1})) = category{i,1};
+end
+
+%plot graph in subplot
+colours=0.2:0.2:1;
+figure;
+for i=1:length(averages(:,1))
+    subplot(7,4,i);
+    y=averages(i,:)';
+    bar_h=bar(y);
+    bar_child=get(bar_h,'Children');
+    set(bar_child,'CData',colours);
+    title(otuNames{i});
+    hold on;
+    eb1 = errorbar(averages(i,:),stderrors(i,:),'.k');
+    set(gca,'XLim',[.5 5.5]);
+    set(gca,'XTick',[1:5]);
+    set(gca,'XTickLabel',groupNames);
+end
+
+%graphs showing p values for each metaboite 
+for i=1:26
+    metaboliteAb(i,:)=metaboliteNames{i}(1:3);
+end
+
+figure;
+for i=1:26
+    y2(i) = anovaAllGroups{i,1};
+end
+bar(y2)
+title('one-way ANOVA')
+xlabel('metabolite')
+ylabel('p value')
+set(gca,'XLim',[.5 26.5]);
+set(gca,'XTick',[1:26]);
+set(gca,'XTickLabel',metaboliteAb)

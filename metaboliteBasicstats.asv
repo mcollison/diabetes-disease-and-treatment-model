@@ -1,4 +1,4 @@
-function [norm, averages, stderrors, category] = metaboliteBasicstats(matrix, groups)
+function [norm, norm2, averages, stderrors, category] = metaboliteBasicstats(matrix, groups)
 %[NORM, AVERAGES, STDERRORS, CATEGORY] = metaboliteBasicstats(matrix, groups)
 %   Returns NORM a 27x6 logical array of 1 or 0 whether the data points 
 %   show a normal distriubtion. AVERAGES a 27x6 double array of averages
@@ -60,7 +60,7 @@ for k=1:length(matrix(:,1))
     %% need to calculate stats by groups
     for i=1:length(category)
         category{i,1};
-        category{i,2}{k,2} = vector(category{i,2}{k});
+        raw(i,:) = vector(category{i,2}{k});
         aver(i) = mean(vector(category{i,2}{k}));
         standev(i) = std(vector(category{i,2}{k}));
         stderror(i) = standev(i)/sqrt(length(category{i,2}{k}));
@@ -68,5 +68,6 @@ for k=1:length(matrix(:,1))
     end
     averages(k,:)=aver;
     stderrors(k,:)=stderror;
-    norm(k,:)=p;
+    norm(k,:)=h;
+    norm2(k,:)=p;
 end

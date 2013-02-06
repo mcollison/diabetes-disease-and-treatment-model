@@ -1,0 +1,53 @@
+%function [R, p] = metaboliteCorrCoef(matrix)
+matrix=metabolite
+
+for a=1:length(matrix)
+    
+    %remove NaNs from first dimension
+    vector1=matrix(a,:)
+    %find null values
+    j=1;
+    nullvalues=[];
+    for i=1:length(vector1)
+        if isnan(vector1(i))
+            nullvalues(j)=i;
+            j=j+1;
+        end
+    end
+    
+    %set up index to remove null values
+    index=1:length(vector1);
+    
+    for i=1:length(nullvalues)
+        %reverse order so consecutive removal don't affect eachother
+        nullvalue=nullvalues(length(nullvalues)-i+1);
+        index=index([1:nullvalue-1 nullvalue+1:length(index)]);
+    end
+    
+    %remove NaNs from second dimension
+    for k=1:length(matrix)
+        vector2=matrix(k,[index]);
+        %find null values
+        j=1;
+        nullvalues=[];
+        for i=1:length(vector2)
+            if isnan(vector2(i))
+                nullvalues(j)=i;
+                j=j+1;
+            end
+        end
+        
+        %set up index to remove null values
+        index2=1:length(vector2);
+        
+        for i=1:length(nullvalues)
+            %reverse order so consecutive removal don't affect eachother
+            nullvalue=nullvalues(length(nullvalues)-i+1);
+            index=index([1:nullvalue-1 nullvalue+1:length(index)]);
+        end
+        
+%% calculate correlation coefficience using index 1 and 2 return matrix of corrcoef
+        corrcoef(matrix([a k],[index])')
+    end
+end
+

@@ -1,13 +1,13 @@
 %DIABETESANOVA2 Calculates differential stats for treatment groups
-%   DIABETESANOVA2 co-ordinates analyses of a dataset 
+%   DIABETESANOVA2 Returns a 26x59 cell array each containing measurements 
 
 
 %% initial configuration 
-close all
+%close all
 clear all
 
 %set filename and path to the file on your computer
-[metaboliteFileName, otuFileName] = fileNameCheck('results2.txt', 'otu_table3.txt');
+[metaboliteFileName, otuFileName] = fileNameCheck('results2_2.txt', 'otu_table3.txt');
 
 %% metabolite results 
 %separate variables 
@@ -21,18 +21,19 @@ end
 %compute averages and errors 
 [norm, maverages, mstderrors, mcategory] = metaboliteBasicstats(metabolite,mconditionStr);
 
-%compute non-parametric ANOVA stats 
-[manovaAllGroups] = metaboliteAnovaStats(metabolite, mconditionStr, 'off');
+%compute ANOVA stats 
+[manovaAllGroups, manovaTreatmentGroups, manovaTestGroups] = metaboliteAnovaStats(metabolite, mconditionStr, 'off');
 
-%validate model 
-[modelValP]=ranksum(mcategory{1,2}{1,2},mcategory{2,2}{1,2});
+%compute t-test stats NOT CURRENTLY WORKING 
+metaboliteTtest(mcategory,metabolite)
 
 %calculate correlations across metabolites
 [R,p]=metaboliteCorrCoef(metabolite);
 [s,d]=find(p<0.01);
+[s,d];
 
 %plot graphs of averages and standard errorrs 
-metaboliteGraphs(mcategory, metaboliteName, manovaAllGroups);
+metaboliteGraphs(mcategory, metaboliteName, maverages, mstderrors, manovaAllGroups, manovaTreatmentGroups);
 
 %plot anomolous results in comparison to rest of group 
 
@@ -52,7 +53,7 @@ for i=1:length(oanovaAllGroups)
         j=j+1;
     end 
 end
-disp('significant features:' + j)
+fprintf('significant features:' + j)
 
 %plot graphs of averages and standard errorrs NEEDS WORK
 otuGraphs(ocategory, otuName, oaverages, ostderrors, oanovaAllGroups);

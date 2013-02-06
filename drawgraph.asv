@@ -1,0 +1,11 @@
+drawgraph()
+ x=averages(i,:)';
+    bhandle=bar(x);
+    title(metaboliteName(i));
+    hold on;
+    eb1 = errorbar(averages(i,:),stderrors(i,:),'.k');
+    set(gca,'XLim',[.5 5.5]);
+    set(gca,'XTick',[1:5]);
+    set(gca,'XTickLabel',tempGroupNames);
+    
+bar(yvector1,'FaceColor',[1 0 0],'Parent',subplot1);
