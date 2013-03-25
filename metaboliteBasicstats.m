@@ -9,6 +9,7 @@ function [norm, averages, stderrors, category] = metaboliteBasicstats(matrix, gr
 %   condition in the second dimension. MATRIX should be an array with
 %   one sample per row and metabolite measurements per column. GROUPS
 %   should be an 1x59 cell array containing the condition of the sample.
+%   MATRIX and GROUPS are only used within teh function. 
 
 %%
 for k=1:length(matrix(:,1))

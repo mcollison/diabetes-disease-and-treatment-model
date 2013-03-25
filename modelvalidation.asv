@@ -1,404 +1,56 @@
+%MODELVALIDATION Calculates differential stats for validating the diabetic
+%mouse model and produces the figures to show the phenotype shift 
 
-%compute t test stats 
+%% Initial configuration 
+close all
+clear all
+
+%set filename and path to the file on your computer
+[metaboliteFileName, otuFileName] = fileNameCheck('results2.txt', 'otu_table3.txt');
+
+%separate variables 
+[mconditionStr, metaboliteName, metabolite] = separateMetaboliteVars(metaboliteFileName);
+
+%add insulin:gluose ratio 
+for i=1:59 
+    metabolite(27,i)=metabolite(18,i)/metabolite(1,i);
+end
+metaboliteName{27}='GLU:insulin ratio';
+
+%compute averages and errors 
+[norm, maverages, mstderrors, mcategory] = metaboliteBasicstats(metabolite,mconditionStr);
+
+%% Generate stats and graphs between lean and obese controls 
+%graphs and stats for glucose (1) insulin (18) active GLP-1 (25) total
+%GLP-1 (26) and insulin:glucose ratio (27)
+
+%normalisation tests
+variableIndex = [1 18 25 26 27]
+logswitch = [0 0 0 0 1]
+normalisationTest(variableIndex, mcategory, norm, metaboliteName, logswitch, 1);
+
+%box plots and stats 
 figure
-[H,P,CI,STATS]=ttest(metabolite(27,1:10),metabolite(27,11:20))
-res(1,:)=log(metabolite(27,1:10))
-res(2,:)=log(metabolite(27,11:20))
+rawdata(1,:)=metabolite(27,1:10);
+rawdata(2,:)=metabolite(27,11:20);
 subplot(2,1,1)
-boxplot(res')
-res(1,:)=log(metabolite(27,1:10))
-res(2,:)=log(metabolite(27,11:20))
-res(1,:)=log(metabolite(27,1:10))
-res(2,:)=log(metabolite(27,11:20))
-boxplot(res')
-boxplot(res')
+boxplot(rawdata')
+lograwdata(1,:)=log(metabolite(27,1:10));
+lograwdata(2,:)=log(metabolite(27,11:20));
+subplot(2,1,2)
+boxplot(lograwdata')
+
+
+[H,P,CI,STATS]=ttest(res(1,:),res(2,:))
+[H,P,CI,STATS]=ttest(logres(1,:),logres(2,:))
+
+% plot insulin:glucose graph to demonstrate model validation 
+groupNames = ['  Wild Type  '; 'Obese Induced'];
 figure
-subplot(2,1,1)
-normplot(log(metabolite(27,1:10)))
-subplot(2,1,2)
-normplot(log(metabolite(27,11:20)))
-figure
-subplot(2,1,1)
-normplot(metabolite(27,1:10))
-subplot(2,1,2)
-normplot(metabolite(27,11:20))
-
-figure
-[H,P,CI,STATS]=ttest(metabolite(23,1:10),metabolite(23,11:20))
-normplot(metabolite(25, [1:10 11:20]))
-
-tempGroupNames = [' WT ';' Ob ';'G+ve';'G-ve';'g-ve';'OFS ';'G+An';'G-A1';'G-A2'];
-
-%% Plot liver function graphs 
-%plot ALT graph
-a=18;%corresponding metabolite ref number 
-q=length(mcategory);
-colours=0:1/(q-1):1;
-figure;
-subplot(2,2,1)
-y=maverages(a,:)';
-bar_h=bar(y);
-bar_child=get(bar_h,'Children');
-set(bar_child,'CData',colours);
-title('Insulin');
-hold on;
-eb1 = errorbar(maverages(a,:),mstderrors(a,:),'.k');
-set(gca,'XLim',[.5 q+0.5]);
-set(gca,'XTick',[1:q]);
-set(gca,'XTickLabel',tempGroupNames);
-manovaAllGroups{a,1}
-
-%plot CREA graph 
-a=19;
-subplot(2,2,2)
-y=maverages(a,:)';
-bar_h=bar(y);
-bar_child=get(bar_h,'Children');
-set(bar_child,'CData',colours);
-title('Amylin');
-hold on;
-eb1 = errorbar(maverages(a,:),mstderrors(a,:),'.k');
-set(gca,'XLim',[.5 q+0.5]);
-set(gca,'XTick',[1:q]);
-set(gca,'XTickLabel',tempGroupNames);
-manovaAllGroups{a,1}
-
-%plot TP graph 
-a=25;
-subplot(2,2,3)
-y=maverages(a,:)';
-bar_h=bar(y);
-bar_child=get(bar_h,'Children');
-set(bar_child,'CData',colours);
-title('Active Glucagon-like Peptide 1');
-hold on;
-eb1 = errorbar(maverages(a,:),mstderrors(a,:),'.k');
-set(gca,'XLim',[.5 q+0.5]);
-set(gca,'XTick',[1:q]);
-set(gca,'XTickLabel',tempGroupNames);
-manovaAllGroups{a,1}
-
-%plot TP graph 
-a=26;
-subplot(2,2,4)
-y=maverages(a,:)';
-bar_h=bar(y);
-bar_child=get(bar_h,'Children');
-set(bar_child,'CData',colours);
-title('Total Glucagon-like Peptide 1');
-hold on;
-eb1 = errorbar(maverages(a,:),mstderrors(a,:),'.k');
-set(gca,'XLim',[.5 q+0.5]);
-set(gca,'XTick',[1:q]);
-set(gca,'XTickLabel',tempGroupNames);
-manovaAllGroups{a,1}
-
-
-%% Plot liver function graphs 
-%plot ALT graph
-a=20;%corresponding metabolite ref number 
-q=length(mcategory);
-colours=0:1/(q-1):1;
-figure;
-subplot(2,2,1)
-y=maverages(a,:)';
-bar_h=bar(y);
-bar_child=get(bar_h,'Children');
-set(bar_child,'CData',colours);
-title('Leptin');
-hold on;
-eb1 = errorbar(maverages(a,:),mstderrors(a,:),'.k');
-set(gca,'XLim',[.5 q+0.5]);
-set(gca,'XTick',[1:q]);
-set(gca,'XTickLabel',tempGroupNames);
-manovaAllGroups{a,1}
-
-%plot CREA graph 
-a=23;
-subplot(2,2,2)
-y=maverages(a,:)';
-bar_h=bar(y);
-bar_child=get(bar_h,'Children');
-set(bar_child,'CData',colours);
-title('Peptide YY');
-hold on;
-eb1 = errorbar(maverages(a,:),mstderrors(a,:),'.k');
-set(gca,'XLim',[.5 q+0.5]);
-set(gca,'XTick',[1:q]);
-set(gca,'XTickLabel',tempGroupNames);
-manovaAllGroups{a,1}
-
-%plot TP graph 
-a=21;
-subplot(2,2,3)
-y=maverages(a,:)';
-bar_h=bar(y);
-bar_child=get(bar_h,'Children');
-set(bar_child,'CData',colours);
-title('Ghrelin');
-hold on;
-eb1 = errorbar(maverages(a,:),mstderrors(a,:),'.k');
-set(gca,'XLim',[.5 q+0.5]);
-set(gca,'XTick',[1:q]);
-set(gca,'XTickLabel',tempGroupNames);
-manovaAllGroups{a,1}
-
-%plot TP graph 
-a=22;
-subplot(2,2,4)
-y=maverages(a,:)';
-bar_h=bar(y);
-bar_child=get(bar_h,'Children');
-set(bar_child,'CData',colours);
-title('Glucose-dependent Insulinotropic Peptide');
-hold on;
-eb1 = errorbar(maverages(a,:),mstderrors(a,:),'.k');
-set(gca,'XLim',[.5 q+0.5]);
-set(gca,'XTick',[1:q]);
-set(gca,'XTickLabel',tempGroupNames);
-manovaAllGroups{a,1}
-
-
-%% Plot liver function graphs 
-%plot ALT graph
-a=4;%corresponding metabolite ref number 
-q=length(mcategory);
-colours=0:1/(q-1):1;
-figure;
-subplot(2,2,1)
-y=maverages(a,:)';
-bar_h=bar(y);
-bar_child=get(bar_h,'Children');
-set(bar_child,'CData',colours);
-title('Cholesterol');
-hold on;
-eb1 = errorbar(maverages(a,:),mstderrors(a,:),'.k');
-set(gca,'XLim',[.5 q+0.5]);
-set(gca,'XTick',[1:q]);
-set(gca,'XTickLabel',tempGroupNames);
-manovaAllGroups{a,1}
-
-%plot CREA graph 
-a=5;
-subplot(2,2,2)
-y=maverages(a,:)';
-bar_h=bar(y);
-bar_child=get(bar_h,'Children');
-set(bar_child,'CData',colours);
-title('High Density Lipoprotein');
-hold on;
-eb1 = errorbar(maverages(a,:),mstderrors(a,:),'.k');
-set(gca,'XLim',[.5 q+0.5]);
-set(gca,'XTick',[1:q]);
-set(gca,'XTickLabel',tempGroupNames);
-manovaAllGroups{a,1}
-
-%plot TP graph 
-a=6;
-subplot(2,2,3)
-y=maverages(a,:)';
-bar_h=bar(y);
-bar_child=get(bar_h,'Children');
-set(bar_child,'CData',colours);
-title('Glycerols');
-hold on;
-eb1 = errorbar(maverages(a,:),mstderrors(a,:),'.k');
-set(gca,'XLim',[.5 q+0.5]);
-set(gca,'XTick',[1:q]);
-set(gca,'XTickLabel',tempGroupNames);
-manovaAllGroups{a,1}
-
-%plot TP graph 
-a=7;
-subplot(2,2,4)
-y=maverages(a,:)';
-bar_h=bar(y);
-bar_child=get(bar_h,'Children');
-set(bar_child,'CData',colours);
-title('Beta Hydroxy Butyrate');
-hold on;
-eb1 = errorbar(maverages(a,:),mstderrors(a,:),'.k');
-set(gca,'XLim',[.5 q+0.5]);
-set(gca,'XTick',[1:q]);
-set(gca,'XTickLabel',tempGroupNames);
-manovaAllGroups{a,1}
-
-%% Plot liver function graphs 
-%plot ALT graph
-a=17;%corresponding metabolite ref number 
-q=length(mcategory);
-colours=0:1/(q-1):1;
-figure;
-subplot(2,2,1)
-y=maverages(a,:)';
-bar_h=bar(y);
-bar_child=get(bar_h,'Children');
-set(bar_child,'CData',colours);
-title('Albumin/Globulin Ratio');
-hold on;
-eb1 = errorbar(maverages(a,:),mstderrors(a,:),'.k');
-set(gca,'XLim',[.5 q+0.5]);
-set(gca,'XTick',[1:q]);
-set(gca,'XTickLabel',tempGroupNames);
-manovaAllGroups{a,1}
-
-%plot CREA graph 
-a=16;
-subplot(2,2,2)
-y=maverages(a,:)';
-bar_h=bar(y);
-bar_child=get(bar_h,'Children');
-set(bar_child,'CData',colours);
-title('Albumin');
-hold on;
-eb1 = errorbar(maverages(a,:),mstderrors(a,:),'.k');
-set(gca,'XLim',[.5 q+0.5]);
-set(gca,'XTick',[1:q]);
-set(gca,'XTickLabel',tempGroupNames);
-manovaAllGroups{a,1}
-
-%plot TP graph 
-a=15;
-subplot(2,2,3:4)
-y=maverages(a,:)';
-bar_h=bar(y);
-bar_child=get(bar_h,'Children');
-set(bar_child,'CData',colours);
-title('Total Protein');
-hold on;
-eb1 = errorbar(maverages(a,:),mstderrors(a,:),'.k');
-set(gca,'XLim',[.5 q+0.5]);
-set(gca,'XTick',[1:q]);
-set(gca,'XTickLabel',tempGroupNames);
-manovaAllGroups{a,1}
-
-%% Plot liver function graphs 
-%plot ALT graph
-a=13;%corresponding metabolite ref number 
-q=length(mcategory);
-colours=0:1/(q-1):1;
-figure;
-subplot(2,1,1)
-y=maverages(a,:)';
-bar_h=bar(y);
-bar_child=get(bar_h,'Children');
-set(bar_child,'CData',colours);
-title('Amylase');
-hold on;
-eb1 = errorbar(maverages(a,:),mstderrors(a,:),'.k');
-set(gca,'XLim',[.5 q+0.5]);
-set(gca,'XTick',[1:q]);
-set(gca,'XTickLabel',tempGroupNames);
-manovaAllGroups{a,1}
-
-%plot CREA graph 
-a=14;
-subplot(2,1,2)
-y=maverages(a,:)';
-bar_h=bar(y);
-bar_child=get(bar_h,'Children');
-set(bar_child,'CData',colours);
-title('Lipase');
-hold on;
-eb1 = errorbar(maverages(a,:),mstderrors(a,:),'.k');
-set(gca,'XLim',[.5 q+0.5]);
-set(gca,'XTick',[1:q]);
-set(gca,'XTickLabel',tempGroupNames);
-manovaAllGroups{a,1}
-
-%% Plot liver function graphs 
-%plot ALT graph
-a=9;%corresponding metabolite ref number 
-q=length(mcategory);
-colours=0:1/(q-1):1;
-figure;
-subplot(2,1,1)
-y=maverages(a,:)';
-bar_h=bar(y);
-bar_child=get(bar_h,'Children');
-set(bar_child,'CData',colours);
-title('Creatine');
-hold on;
-eb1 = errorbar(maverages(a,:),mstderrors(a,:),'.k');
-set(gca,'XLim',[.5 q+0.5]);
-set(gca,'XTick',[1:q]);
-set(gca,'XTickLabel',tempGroupNames);
-manovaAllGroups{a,1}
-
-%plot CREA graph 
-a=10;
-subplot(2,1,2)
-y=maverages(a,:)';
-bar_h=bar(y);
-bar_child=get(bar_h,'Children');
-set(bar_child,'CData',colours);
-title('Creatine Kinase');
-hold on;
-eb1 = errorbar(maverages(a,:),mstderrors(a,:),'.k');
-set(gca,'XLim',[.5 q+0.5]);
-set(gca,'XTick',[1:q]);
-set(gca,'XTickLabel',tempGroupNames);
-manovaAllGroups{a,1}
-
-%% Plot liver function graphs 
-%plot ALT graph
-a=11;%corresponding metabolite ref number 
-q=length(mcategory);
-colours=0:1/(q-1):1;
-figure;
-subplot(2,1,1)
-y=maverages(a,:)';
-bar_h=bar(y);
-bar_child=get(bar_h,'Children');
-set(bar_child,'CData',colours);
-title('Asparate Transaminase');
-hold on;
-eb1 = errorbar(maverages(a,:),mstderrors(a,:),'.k');
-set(gca,'XLim',[.5 q+0.5]);
-set(gca,'XTick',[1:q]);
-set(gca,'XTickLabel',tempGroupNames);
-
-%plot AST graph 
-a=12;
-subplot(2,1,2)
-y=maverages(a,:)';
-bar_h=bar(y);
-bar_child=get(bar_h,'Children');
-set(bar_child,'CData',colours);
-title('Alanine Transaminase');
-hold on;
-eb1 = errorbar(maverages(a,:),mstderrors(a,:),'.k');
-set(gca,'XLim',[.5 q+0.5]);
-set(gca,'XTick',[1:q]);
-set(gca,'XTickLabel',tempGroupNames);
-
-%% Plot insulin insensitivity graphs 
-%plot insulin:glucose graph
-q=length(mcategory);
-q=2;
-colours=0:1/(q-1):1;
-figure;
-subplot(2,1,1)
-y=maverages(27,[1 2])';
-bar_h=bar(y);
-bar_child=get(bar_h,'Children');
-set(bar_child,'CData',colours);
+logres(1,:)=log(category{1,2}{1,2})
+logres(2,:)=log(category{2,2}{1,2})
+boxplot(logres')
+set(gca,'XLim',[.5 2.5]);
+set(gca,'XTick',[1:2]);
+set(gca,'XTickLabel', groupNames);
 title('insulin:glucose ratio');
-hold on;
-eb1 = errorbar(maverages(27,[1 2]),mstderrors(27,[1 2]),'.k');
-set(gca,'XLim',[.5 q+0.5]);
-set(gca,'XTick',[1:q]);
-set(gca,'XTickLabel',tempGroupNames);
-
-%plot active GLP-1 graph 
-subplot(2,1,2)
-y=maverages(25,[1 2])';
-bar_h=bar(y);
-bar_child=get(bar_h,'Children');
-set(bar_child,'CData',colours);
-title('active GLP-1');
-hold on;
-eb1 = errorbar(maverages(25,:),mstderrors(25,:),'.k');
-set(gca,'XLim',[.5 q+0.5]);
-set(gca,'XTick',[1:q]);
-set(gca,'XTickLabel',tempGroupNames);
