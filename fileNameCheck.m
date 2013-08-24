@@ -3,11 +3,11 @@ function [metaboliteFileName, otuFileName]=fileNameCheck(metaboliteReadings, otu
 [OS, compname] = computercheck;
 if OS == 'PCWIN64'
     if strcmp(compname,'ceambiopengd20')
-        metaboliteFileName = strcat('C:\Users\user\Dropbox\code\matlab\resources\',metaboliteReadings);
-        otuFileName = strcat('C:\Users\user\Dropbox\code\matlab\resources\',otuReadings);
+        metaboliteFileName = strcat('C:\Users\user\Dropbox\',metaboliteReadings);
+        otuFileName = strcat('C:\Users\user\Dropbox\',otuReadings);
     elseif strcmp(compname,'MAGEBANE')
-        metaboliteFileName = strcat('D:\program Files (x86)\Dropbox\code\matlab\resources\',metaboliteReadings);
-        otuFileName = strcat('D:\program Files (x86)\Dropbox\code\matlab\resources\',otuReadings);
+        metaboliteFileName = strcat('D:\program Files (x86)\Dropbox\',metaboliteReadings);
+        otuFileName = strcat('D:\program Files (x86)\Dropbox\',otuReadings);
     else
         display('Computer not recognised: may need to correct file path code');
     end

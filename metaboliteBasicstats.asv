@@ -65,9 +65,16 @@ for k=1:length(matrix(:,1))
         aver(i) = mean(vector(category{i,2}{k}));
         standev(i) = std(vector(category{i,2}{k}));
         stderror(i) = standev(i)/sqrt(length(category{i,2}{k}));
-        [h(i),p(i),ksstat(i),cv(i)]=kstest(vector(category{i,2}{k}));
+        %kstest only works when the distribution starts at zero
+        [h(i),p(i),ksstat(i),cv(i)]=kstest(vector(category{i,2}{k})-aver(i));
+        %to check this is working the line below should only return
+        %rounding errors
+        %sum(vector(category{i,2}{k})-aver(i))
     end
     averages(k,:)=aver;
     stderrors(k,:)=stderror;
     norm(k,:)=p;
 end
+%norm values are p values for normalisation testing. If the distribution is
+%normal the p value should be above 0.05. If it is not normal and the null
+%hypothesis 'that the distribution is normal' can be rejected 

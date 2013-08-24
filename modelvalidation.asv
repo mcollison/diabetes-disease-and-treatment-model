@@ -1,5 +1,6 @@
-%MODELVALIDATION Calculates differential stats for validating the diabetic
-%mouse model and produces the figures to show the phenotype shift 
+%MODELVALIDATION Test whether the distributions are normal then calculates 
+%differential stats for validating the diabetic mouse model and produces 
+%and formats the figures for publication
 
 %% Initial configuration 
 close all
@@ -15,42 +16,22 @@ clear all
 for i=1:59 
     metabolite(27,i)=metabolite(18,i)/metabolite(1,i);
 end
-metaboliteName{27}='GLU:insulin ratio';
+metaboliteName{27}='Insulin:Glucose ratio';
 
 %compute averages and errors 
 [norm, maverages, mstderrors, mcategory] = metaboliteBasicstats(metabolite,mconditionStr);
 
 %% Generate stats and graphs between lean and obese controls 
 %graphs and stats for glucose (1) insulin (18) active GLP-1 (25) total
-%GLP-1 (26) and insulin:glucose ratio (27)
+%GLP-1 (26) and insulin:glucose ratio (27). Matrix indexes in brackets. 
+variableIndex = [1 18 25 26 27];
+logswitch = [0 0 0 0 1];
+
+%treatment groups: Lean control (1) and obese control (2)
+groups = [1 2];
 
 %normalisation tests
-variableIndex = [1 18 25 26 27]
-logswitch = [0 0 0 0 1]
-normalisationTest(variableIndex, mcategory, norm, metaboliteName, logswitch, 1);
+[normpvalues] = normalisationTest(variableIndex, mcategory, norm, metaboliteName, logswitch, groups);
 
 %box plots and stats 
-figure
-rawdata(1,:)=metabolite(27,1:10);
-rawdata(2,:)=metabolite(27,11:20);
-subplot(2,1,1)
-boxplot(rawdata')
-lograwdata(1,:)=log(metabolite(27,1:10));
-lograwdata(2,:)=log(metabolite(27,11:20));
-subplot(2,1,2)
-boxplot(lograwdata')
-
-
-[H,P,CI,STATS]=ttest(res(1,:),res(2,:))
-[H,P,CI,STATS]=ttest(logres(1,:),logres(2,:))
-
-% plot insulin:glucose graph to demonstrate model validation 
-groupNames = ['  Wild Type  '; 'Obese Induced'];
-figure
-logres(1,:)=log(category{1,2}{1,2})
-logres(2,:)=log(category{2,2}{1,2})
-boxplot(logres')
-set(gca,'XLim',[.5 2.5]);
-set(gca,'XTick',[1:2]);
-set(gca,'XTickLabel', groupNames);
-title('insulin:glucose ratio');
+[pvalues] = generateBoxPlotsAndWilcoxonPValue(variableIndex, mcategory, metaboliteName, logswitch);
