@@ -4,6 +4,7 @@
 %% Initial configuration 
 close all
 clear all
+path(path,'./support_scripts/')
 
 %set filename and path to the file on your computer
 [metaboliteFileName, otuFileName] = fileNameCheck('results2.txt', 'otu_table3.txt');
