@@ -1,4 +1,0 @@
-%load 16S data 
-otu_fid = fopen(otuFileName);
-%parse data into string by tab delimiters
-otu_C = textscan(otu_fid, '%s', 'delimiter', '\t');

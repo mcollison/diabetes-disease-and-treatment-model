@@ -1,1 +1,8 @@
+# Folders #
+###########
 resources2/
+resources/
+
+# Backup files  #
+#################
+*.asv
