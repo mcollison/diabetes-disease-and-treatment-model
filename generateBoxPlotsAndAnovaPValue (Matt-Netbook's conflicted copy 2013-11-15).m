@@ -7,11 +7,16 @@ if length(groups)==5
 elseif length(groups)==3
     groupNames=['     Gram +ve'; 'High gram -ve'; ' Low gram -ve'];
 else
-    gr
-    groupNames=['  L '; '  O '; 'A_{500}'; 'B_{500}'; ' B_{50}'; 'D{10\%}'];
+    groupNamesCell{1}='L';
+    groupNamesCell{2}='O';
+    groupNamesCell{3}='A_{500}';
+    groupNamesCell{4}='B_{500}';
+    groupNamesCell{5}='B_{50}';
+    groupNamesCell{6}='D_{10\%}';
+    groupNames=['  L '; '  O '; 'A500'; 'B500'; ' B50'; 'D10%'];
 end
 
-angleXaxisLabels=1;
+angleXaxisLabels=0;
 l=1;
 for i=1:length(variableIndex)
     clear data
@@ -26,16 +31,16 @@ for i=1:length(variableIndex)
         set(gca,'XLim',[.5 length(groups)+.5]);
         set(gca,'XTick',Xt);
         if angleXaxisLabels==0
-            set(gca,'XTickLabel', groupNames);
+            set(gca,'XTickLabel', groupNamesCell);
+            format_ticks(gca);
         else
             ax = axis;
             axis(axis);
             Yl = ax(3:4); % Y-axis limits
             % Place the text labels
             t = text(Xt,Yl(1)*ones(1,length(Xt)),groupNames(1:length(groups),:));
-            format_ticks()
-%             set(t,'HorizontalAlignment','right','VerticalAlignment','top', ...
-%                 'Rotation',45);
+             set(t,'HorizontalAlignment','right','VerticalAlignment','top', ...
+                 'Rotation',45);
             % Remove the default labels
             set(gca,'XTickLabel',{[]})
         end
@@ -52,7 +57,7 @@ for i=1:length(variableIndex)
         set(gca,'XLim', Xl);
         set(gca,'XTick',Xt);
         if angleXaxisLabels==0
-            set(gca,'XTickLabel', groupNames);
+            set(gca,'XTickLabel', groupNamesCell);
         else
             ax = axis;
             axis(axis);

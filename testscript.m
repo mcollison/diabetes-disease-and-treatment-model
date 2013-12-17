@@ -1,3 +1,17 @@
+clear all 
+close all 
+
+plot(1:10) % Example graph
+set(gcf,'PaperUnits','centimeters','PaperPosition',[0 0 15 15])
+print -dpdf filename.pdf -r150
+
+
+% set(gcf, 'units', 'centimeters')
+% set(gcf, 'Position', [0 0 5 5]);
+% set(gcf, 'PaperPosition', [0 0 5 5]); %Position the plot further to the left and down. Extend the plot to fill entire paper.
+% set(gcf, 'PaperSize', [5 5]); %Keep the same paper size
+% saveas(gcf, 'pdf_figures/test', 'pdf')
+
 % Generate some test data. Assume that the X-axis represents months.
 x = 1:12;
 y = 10*rand(1,length(x));
@@ -6,8 +20,18 @@ y = 10*rand(1,length(x));
 h = plot(x,y,'+');
 
 % Reduce the size of the axis so that all the labels fit in the figure.
+%pos = get(gca,'Position');
+%set(gca,'Position',[pos(1), .2, pos(3) .65])
+
+%figure positioning and exportng to matlab
+set(gca,'units','centimeters')
 pos = get(gca,'Position');
-set(gca,'Position',[pos(1), .2, pos(3) .65])
+ti = get(gca,'TightInset');
+%set(gcf, 'PaperUnits','centimeters');
+%set(gcf, 'PaperSize', [pos(3)+ti(1)+ti(3) pos(4)+ti(2)+ti(4)]);
+%set(gcf, 'PaperPositionMode', 'manual');
+%figuresize(pos(3)+ti(1)+ti(3), pos(4)+ti(2)+ti(4), 'centimeters')
+saveas(gcf, 'pdf_figures/test', 'pdf')
 
 % Add a title.
 title('This is a title')

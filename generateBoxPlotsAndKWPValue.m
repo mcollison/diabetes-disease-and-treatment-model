@@ -29,7 +29,7 @@ for i=1:length(variableIndex)
             set(gca,'XTickLabel',{[]})
         end
         title(metaboliteName(variableIndex(i)));
-        pvalue(i)=anova1(data, groupNames, 'off');
+        pvalue(i)=kruskalwallis(data, groupNames, 'off');
     else
         for j=1:length(groups)
             data(1:length(mcategory{j,2}{variableIndex(i),2}),j)=log(mcategory{j,2}{variableIndex(i),2});
@@ -54,7 +54,7 @@ for i=1:length(variableIndex)
             set(gca,'XTickLabel',{[]})
         end
         title(metaboliteName(variableIndex(i)));
-        pvalue(i)=anova1(data, groupNames, 'off');
+        pvalue(i)=kruskalwallis(data, groupNames, 'off');
     end
     disp(strcat('Kruskal Wallis test p-value for', {' '}, metaboliteName(variableIndex(i)), {' '}, 'between the treatment groups:', {' '}, num2str(pvalue(i))))
     string_answers{l}=strcat('Kruskal Wallis test p-value for', {' '}, metaboliteName(variableIndex(i)), {' '}, 'between the treatment groups:', {' '}, num2str(pvalue(i)));
