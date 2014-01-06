@@ -5,6 +5,7 @@
 %% Initial configuration 
 close all
 clear all
+path(path,'./support_scripts/')
 
 %set filename and path to the file on your computer
 [metaboliteFileName, otuFileName] = fileNameCheck('results2.txt', 'otu_table3.txt');
@@ -28,30 +29,47 @@ metaboliteName{27}='insulin:glucose';
 %compute t-test p value between lean and high dose gram negative 
 % this could aslo be done with log values, however, the result should
 % essentially be the same if not less significant 
-[hvalue, pvalue]=ttest2(mcategory{1,2}{27,2},mcategory{4,2}{27,2})
+[hvalue, pvalue]=ttest2(mcategory{1,2}{27,2},mcategory{4,2}{27,2});
 
 
 %% Plots to help see relation between glucose and insulin and ins:glu ratio
-weight_loss_figure
-figure
-groupcategory=[ones(10,1) ; ones(10,1)+1 ; ones(9,1)+2 ; ones(10,1)+3 ; ones(10,1)+4 ; ones(10,1)+5];
-xax=metabolite(1,:)'
-yax=metabolite(18,:)'
-gscatter(xax,yax,groupcategory,'bgrcmk','*',15)
-figure
-xax=1:59
-plotyy(xax,metabolite(1,:),xax,metabolite(18,:))
-figure
-plotyy(xax,metabolite(18,:),xax,metabolite(27,:))
+weight_loss_figure;
+% figure
+% groupcategory=[ones(10,1) ; ones(10,1)+1 ; ones(9,1)+2 ; ones(10,1)+3 ; ones(10,1)+4 ; ones(10,1)+5];
+% xax=metabolite(1,:)';
+% yax=metabolite(18,:)';
+% gscatter(xax,yax,groupcategory,'bgrcmk','*',15);
+% figure
+% xax=1:59
+% plotyy(xax,metabolite(1,:),xax,metabolite(18,:));
+% figure
+% plotyy(xax,metabolite(18,:),xax,metabolite(27,:));
+
 %n x p
 % set up p variable for delta weight and total GLP
 weight = [weightchange(:,1); weightchange(:,2);weightchange(1:9,3);weightchange(:,6);weightchange(:,8);weightchange(:,9)];
 aglp=metabolite(25,:);
 tglp=metabolite(26,:);
-X=[weight aglp' tglp'];
+X=[ones(length(weight),1) weight metabolite(1:26,:)'];
 y=metabolite(27,:)';
-%test for interactions STEP BELOW IS UNCLEAR test without lean data 
-[b,se,pval,inmodel,stats,nextstep,history]=stepwisefit(X,y, 'display', 'on')
+
+j=1;
+metaboliteName1{1}='intersect';
+for i=1:length(metaboliteName)
+        metaboliteName1{i+1}=metaboliteName{i};
+end
+for i=1:length(y)
+    if (isnan(y(i)))
+    else
+        y1(j)=y(i);
+        X1(j,:)=X(i,:);
+        j=j+1;
+    end 
+end
+
+% model insulin resistance 
+mdl2=stepwiselm(X1,y1,'PEnter',0.06,'ResponseVar','insulin resistence','PredictorVars',metaboliteName1);
+%[b,se,pval,stats]=stepwiselm(X1,y1, 'display', 'on');
 
 %% Generate stats and graphs between lean and obese controls 
 %graphs and stats for glucose (1) insulin (18) active GLP-1 (25) total
@@ -97,3 +115,7 @@ for i=1:length(axesHandles)
  end
 %set(axesHandles,'fontsize', 10)
 saveas(gcf, 'pdf_figures/treatment_effects_diabetic_markers', 'pdf')
+
+%% Publish documentation for online repository and appendices 
+publish('treatmenteffects.m','html')
+publish('treatmenteffects.m','latex')
